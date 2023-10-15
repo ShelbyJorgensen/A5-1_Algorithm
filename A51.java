@@ -17,13 +17,13 @@ public class A51 {
 		
 		// Will hold the final key value
 		ArrayList<Integer> key = new ArrayList<Integer>();
-		int keyLength = 32;
+		int keyLength = 1;
 		
 		// Provided starting values for registers X, Y, and Z
 		int[] regX = { 1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1 };
 		int[] regY = { 1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1 };
 		int[] regZ = { 1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0 };
-		
+					
 		// Print out starting register values
 		System.out.println("Start:");
 		System.out.print("x: ");
@@ -33,40 +33,50 @@ public class A51 {
 		System.out.print("z: ");
 		printArray(regZ);
 		
-		// Iterate through the number of bits in the desired key
-		for(int i = 0; i < keyLength; i++) {
-			// Find the majority of the registers at this iteration
-			int majority = maj(regX[8], regY[10], regZ[10]);
+		// Error handling for any bad values in registers of in key length
+		try {
 			
-			// If a register has a majority bit, XOR to find the new value and update the register
-			if (regX[8] == majority) {
-				regX = x(regX);
-			}
-			if (regY[10] == majority) {
-				regY = y(regY);
-			}
-			if (regZ[10] == majority) {
-				regZ = z(regZ);
+			// Iterate through the number of bits in the desired key
+			for(int i = 0; i < keyLength; i++) {
+				// Find the majority of the registers at this iteration
+				int majority = maj(regX[8], regY[10], regZ[10]);
+				
+				// If a register has a majority bit, XOR to find the new value and update the register
+				if (regX[8] == majority) {
+					regX = x(regX);
+				}
+				if (regY[10] == majority) {
+					regY = y(regY);
+				}
+				if (regZ[10] == majority) {
+					regZ = z(regZ);
+				}
+				
+				// Update the front of the key with the necessary bit based on XOR
+				key.add(0, (regX[18] ^ regY[21] ^ regZ[22])); 
 			}
 			
-			// Update the front of the key with the necessary bit based on XOR
-			key.add(0, (regX[18] ^ regY[21] ^ regZ[22])); 
+			
+			// Print all of the final regester values
+			System.out.println("End:");
+			System.out.print("x: ");
+			printArray(regX);
+			System.out.print("y: ");
+			printArray(regY);
+			System.out.print("z: ");
+			printArray(regZ);
+			
+			// Convert key from Integer ArrayList to int Array for printing in correct format
+			int[] finalKey = key.stream().mapToInt(Integer::intValue).toArray();
+			System.out.print("Key: ");
+			printArray(finalKey);
+			
+		} catch (Exception e) {
+			System.out.println("Key must be a positive value, and resisters must have following sizes:");
+			System.out.println("Register X: 19");
+			System.out.println("Register Y: 21");
+			System.out.println("Register Z: 22");
 		}
-		
-		
-		// Print all of the final regester values
-		System.out.println("End:");
-		System.out.print("x: ");
-		printArray(regX);
-		System.out.print("y: ");
-		printArray(regY);
-		System.out.print("z: ");
-		printArray(regZ);
-		
-		// Convert key from Integer ArrayList to int Array for printing in correct format
-		int[] finalKey = key.stream().mapToInt(Integer::intValue).toArray();
-		System.out.print("Key: ");
-		printArray(finalKey);
 		
 	}
 	
